@@ -12,7 +12,6 @@ fi
 
 FOLDER=${3:-.}
 
-
 #############################################################
 ## Comprobamos si el directorio existe y lo es             ##
 #############################################################
@@ -21,7 +20,6 @@ then
     echo "Directorio $FOLDER no existe o bien no es un directorio"
     exit 2
 fi
-
 
 #############################################################
 ## Comprobamos si el primer argumento es un número entero  ##
@@ -37,8 +35,6 @@ ase "$1" in
         UMBRAL=$1
         ;;
 esac
-
-
 
 #############################################################
 ## Comprobamos si el segundo argumento es una letra b, B,  ##
@@ -65,21 +61,32 @@ case "$2" in
         ;;
 esac
 
-
-
-
-
 #############################################################
 ## Recorremos los elementos del directorio y borramos los  ##
 ## ficheros regulares cuyo tamaño supere el umbral         ##
 #############################################################
 
+LIMITE=$((UMBRAL * BYTESEQUIV))
 
-
-
-
-
-
+for FICHERO in "$FOLDER"/*
+do
+    if [ -f "$FICHERO" ]
+    then
+        BYTESFICHERO=$(wc -c < "$FICHERO")
+        BYTESFICHERO=$((BYTESFICHERO))
+        if [ $BYTESFICHERO -gt $LIMITE ]
+        then
+            if [ $BYTESEQUIV -eq 1 ]
+            then
+                OCUPA=$BYTESFICHERO
+            else
+                OCUPA=$(awk -v t=$BYTESFICHERO -v e=$BYTESEQUIV 'BEGIN { printf "%.2f", t / e }')
+            fi
+            echo "+ Se borra fichero $(basename "$FICHERO"), que ocupa $OCUPA $UNIDAD en disco"
+            rm "$FICHERO"
+        fi
+    fi
+done
 
 #############################################################
 ## Visualizamos los datos validados en variables:          ##
