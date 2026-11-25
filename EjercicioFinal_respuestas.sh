@@ -27,8 +27,16 @@ fi
 ## Comprobamos si el primer argumento es un número entero  ##
 ## y asignamos el valor de la variable UMBRAL si procede   ##
 #############################################################
-
-
+ase "$1" in
+    "" | *[!0-9]*)
+        # Vacío o contiene algún carácter que no es un dígito
+        echo "Se requiere un número entero, pero se ha proporcionado: $1"
+        exit 3
+        ;;
+    *)
+        UMBRAL=$1
+        ;;
+esac
 
 
 
@@ -38,7 +46,24 @@ fi
 ## UNIDAD y BYTESEQUIV cuando proceda                      ##
 #############################################################
 
-
+case "$2" in
+    b | B)
+        UNIDAD=bytes
+        BYTESEQUIV=1
+        ;;
+    k | K)
+        UNIDAD=kibibytes
+        BYTESEQUIV=1024
+        ;;
+    m | M)
+        UNIDAD=mebibytes
+        BYTESEQUIV=$((1024 * 1024))
+        ;;
+    *)
+        echo "Unidad de medida no válida: $2. Se requiere b, B, k, K, m o M"
+        exit 4
+        ;;
+esac
 
 
 
